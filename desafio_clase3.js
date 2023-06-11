@@ -8,8 +8,9 @@ class ProductManager {
     }
 
     getId =async () => {
-        const counter = this.path.length
-        const id = (counter > 0) ? this.path[counter - 1].id +1 :1
+        const products = await this.getProducts()
+        const count = products.length
+        const id = (count > 0) ? products[count - 1].id +1 :1
 
         return id
     }
@@ -23,10 +24,10 @@ class ProductManager {
         const codeProd = await this.getProducts()
         const invalidCode = codeProd.some((prod) => {return prod.code === code })
         if(invalidCode){
-            console.log("El còdigo ingresado ya fue utilizado")
+            console.error("El còdigo ingresado ya fue utilizado")
         }
 
-        const product = {title, description, price, thumbnail, stock, code, id: this.getId()}
+        const product = {title, description, price, thumbnail, stock, code, id: await this.getId()}
         const list = await this.getProducts()
         list.push(product)
 
@@ -39,7 +40,7 @@ class ProductManager {
             const dateObject = JSON.parse(date)
             return dateObject
         } catch (error) {
-            console.log('No se encontro el archivo')
+            console.error('No se encontro el archivo')
             return []
         }
         
@@ -62,7 +63,7 @@ class ProductManager {
         const upProd = await this.getProducts()
         const productIndex = upProd.findIndex((prod) => prod.id === id)
         if(!productIndex !== -1){
-            console.log('El producto no existe')
+            console.error('El producto no se actualizo')
             return; 
         }
         const updateProducts = upProd.map((product) =>{
@@ -84,7 +85,7 @@ class ProductManager {
         const deleteProduct = delProd.filter ((prod) => prod.id !== productId)
         const prodExist = deleteProduct.findIndex((prod) => prod.id === productId)
         if(!prodExist !== -1){
-            console.log('El producto no existe')
+            console.error('El producto no existe')
             return;
         }
 
@@ -95,11 +96,17 @@ class ProductManager {
     async function run () {
         const manager = new ProductManager('database.json')
         console.log(await manager.getProducts())
-        await manager.addProduct("Producto prueba", "Este es un producto prueba", 200, "Sin imagen", 25 , "ABC123")
+        await manager.addProduct("Producto prueba1", "Este es un producto de prueba1", 200, "Sin imagen1", 25 , "ABC123")
+        await manager.addProduct("Producto prueba2", "Este es un producto de prueba2", 250, "Sin imagen2", 26 , "DEF234")
+        await manager.addProduct("Producto prueba3", "Este es un producto de prueba3", 300, "Sin imagen3", 27 , "GHI345")
+        await manager.addProduct("Producto prueba4", "Este es un producto de prueba4", 350, "Sin imagen4", 28 , "JKL456")
         console.log(await manager.getProducts())
-        console.log(await manager.getProductById(1))
-        console.log(await manager.updateProduct())
-        console.log(await manager.deleteProduct())
+        console.log(await manager.getProductById(2))
+        console.log(await manager.getProductById(5))
+        console.log(await manager.updateProduct(2,{title:"Producto ya probado"}))
+        console.log(await manager.getProducts())
+        console.log(await manager.deleteProduct(4))
+        console.log(await manager.getProducts())
 
     }
 
