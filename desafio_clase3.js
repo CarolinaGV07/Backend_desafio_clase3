@@ -62,7 +62,7 @@ class ProductManager {
     updateProduct = async (id,productObj) => {
         const upProd = await this.getProducts()
         const productIndex = upProd.findIndex((prod) => prod.id === id)
-        if(!productIndex !== -1){
+        if(!productIndex === -1){
             console.error('El producto no se actualizo')
             return; 
         }
@@ -82,16 +82,18 @@ class ProductManager {
     deleteProduct = async (productId) => {
 
         const delProd = await this.getProducts()
-        const deleteProduct = delProd.filter ((prod) => prod.id !== productId)
-        const prodExist = deleteProduct.findIndex((prod) => prod.id === productId)
-        if(!prodExist !== -1){
+        const prodExist = delProd.findIndex((prod) => prod.id === productId)
+        if(prodExist === -1){
             console.error('El producto no existe')
             return;
         }
 
+        const deleteProduct = delProd.filter((prod) => prod.id !== productId)
+
         await fs.promises.writeFile(this.path, JSON.stringify(deleteProduct),'utf-8');
     }
 }
+
 
     async function run () {
         const manager = new ProductManager('database.json')
